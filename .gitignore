@@ -1,0 +1,12 @@
+# données (jeu UCI non redistribué)
+data/
+
+# sorties générées à l'exécution
+analysis/notebook_final_k3.json
+analysis/figures_modelisation/nbk*_*.png
+
+# environnement / outils
+.ipynb_checkpoints/
+__pycache__/
+.venv/
+.remember/
