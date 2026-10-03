@@ -15,7 +15,7 @@ Projet mené selon la démarche CRISP-DM sur le jeu UCI *Diabetes 130-US Hospita
 - [x] **II. Compréhension des données** : cible, séjours par patient, valeurs manquantes, âge, HbA1c, insuline, médicaments, corrélations, distributions
 - [x] **III. Préparation des données** : variables dérivées, exclusions et déduplication, valeurs manquantes, regroupements, feature engineering (101 766 séjours → 69 977 patients)
 - [x] **IV. Modélisation, DSO 1 : segmentation des patients** : 11 variables sur trois axes, choix de k (coude, silhouette, stabilité ARI), K-Means k = 3, centres standardisés, ACP, description des profils A / B / C (réadmission 7,2 / 10,5 / 12,0 %)
-- [ ] V. Modélisation, DSO 2 : classification du risque de réadmission
+- [x] **V. Modélisation, DSO 2 : classification du risque de réadmission** : découpage 80 / 20 stratifié, régression logistique et deux XGBoost en validation croisée à 5 plis (top 10 % de 19,3 à 20,5 %, au-dessus du critère de 18 %), XGBoost réglé retenu, choix du seuil (liste top 10 %), courbe d'apprentissage
 - [ ] VI. Évaluation
 - [ ] VII. Synthèse
 
