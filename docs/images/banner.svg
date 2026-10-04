@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="380" viewBox="0 0 1280 380" role="img" aria-label="Diabetes 130-US Hospitals : segmentation des patients et prédiction du risque de réadmission à 30 jours">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#091a31"/>
+      <stop offset="0.6" stop-color="#0f2d55"/>
+      <stop offset="1" stop-color="#16427a"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#ffffff" stroke-opacity="0.045"/>
+    </pattern>
+    <linearGradient id="ecg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4ea3ff" stop-opacity="0"/>
+      <stop offset="0.3" stop-color="#4ea3ff"/>
+      <stop offset="0.75" stop-color="#eb6834"/>
+      <stop offset="1" stop-color="#eb6834" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.85" cy="0.25" r="0.55">
+      <stop offset="0" stop-color="#2a78d6" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#2a78d6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1280" height="380" rx="20" fill="url(#bg)"/>
+  <rect width="1280" height="380" rx="20" fill="url(#glow)"/>
+  <rect width="1280" height="380" rx="20" fill="url(#grid)"/>
+
+  <!-- tracé de rythme cardiaque -->
+  <path d="M800 118 H905 L920 118 L932 92 L944 140 L960 36 L978 186 L994 118 H1060 L1074 104 L1088 118 H1150 L1160 112 L1170 118 H1250"
+        fill="none" stroke="url(#ecg)" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="1170" cy="118" r="5" fill="#eb6834"/>
+  <circle cx="1170" cy="118" r="11" fill="#eb6834" fill-opacity="0.25"/>
+
+  <g font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif">
+    <!-- étiquette -->
+    <rect x="64" y="48" width="292" height="32" rx="16" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
+    <circle cx="84" cy="64" r="5" fill="#eb6834"/>
+    <text x="98" y="69" font-size="14" font-weight="600" letter-spacing="1.5" fill="#cfe0f5">PROJET DATA SCIENCE · CRISP-DM</text>
+
+    <!-- titre -->
+    <text x="62" y="146" font-size="56" font-weight="800" fill="#ffffff" letter-spacing="-0.5">Diabetes 130-US Hospitals</text>
+    <text x="64" y="190" font-size="22" fill="#b9cde6">Segmentation des patients et prédiction du risque de réadmission à 30 jours</text>
+
+    <!-- chiffres clés -->
+    <g>
+      <rect x="64" y="236" width="270" height="96" rx="14" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.14"/>
+      <rect x="64" y="236" width="5" height="96" rx="2.5" fill="#4ea3ff"/>
+      <text x="90" y="285" font-size="36" font-weight="800" fill="#ffffff">69 977</text>
+      <text x="90" y="313" font-size="15" fill="#9fb8d6">patients, premier séjour</text>
+    </g>
+    <g>
+      <rect x="358" y="236" width="270" height="96" rx="14" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.14"/>
+      <rect x="358" y="236" width="5" height="96" rx="2.5" fill="#7fb069"/>
+      <text x="384" y="285" font-size="36" font-weight="800" fill="#ffffff">3 profils</text>
+      <text x="384" y="313" font-size="15" fill="#9fb8d6">K-Means, réadmis de 7,2 à 12,0 %</text>
+    </g>
+    <g>
+      <rect x="652" y="236" width="270" height="96" rx="14" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.14"/>
+      <rect x="652" y="236" width="5" height="96" rx="2.5" fill="#e6a100"/>
+      <text x="678" y="285" font-size="36" font-weight="800" fill="#ffffff">0,652</text>
+      <text x="678" y="313" font-size="15" fill="#9fb8d6">ROC-AUC sur le test</text>
+    </g>
+    <g>
+      <rect x="946" y="236" width="270" height="96" rx="14" fill="#eb6834" fill-opacity="0.16" stroke="#eb6834" stroke-opacity="0.55"/>
+      <rect x="946" y="236" width="5" height="96" rx="2.5" fill="#eb6834"/>
+      <text x="972" y="285" font-size="36" font-weight="800" fill="#ffffff">20,2 %</text>
+      <text x="972" y="313" font-size="15" fill="#f3c7b3">réadmis dans le top 10 % (×2,25)</text>
+    </g>
+  </g>
+</svg>

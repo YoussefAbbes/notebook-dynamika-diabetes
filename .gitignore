@@ -4,6 +4,10 @@ data/
 # sorties générées à l'exécution
 analysis/notebook_final_k3.json
 analysis/figures_modelisation/nbk*_*.png
+analysis/figures_modelisation/fig14_cv_comparaison.png
+analysis/figures_modelisation/fig20_modeles_non_conventionnels.png
+analysis/figures_modelisation/fig22_tous_sejours.png
+diabetes_clean_prepared.csv
 
 # environnement / outils
 .ipynb_checkpoints/
