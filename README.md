@@ -322,6 +322,3 @@ Le notebook cherche le dossier `data` en remontant depuis son emplacement :
 - **Article de référence** : Strack B. et al. (2014), *Impact of HbA1c Measurement on Hospital Readmission Rates:
   Analysis of 70,000 Clinical Database Patient Records*, BioMed Research International.
 
-<p align="center">
-  <sub>Projet réalisé par <a href="https://github.com/YoussefAbbes">Youssef Abbes</a> · méthodologie CRISP-DM</sub>
-</p>
