@@ -19,6 +19,7 @@
   <a href="#segmentation-des-patients-dso-1">Segmentation</a> ·
   <a href="#classification-du-risque-dso-2-et-dso-3">Classification</a> ·
   <a href="#évaluation-sur-le-jeu-de-test">Évaluation</a> ·
+  <a href="#itération-après-le-retour-du-jury">Itération</a> ·
   <a href="#relancer-le-notebook">Relancer</a>
 </p>
 
@@ -276,6 +277,110 @@ grand des profils à risque.
 </p>
 
 </details>
+
+## Itération après le retour du jury
+
+> [!NOTE]
+> À la suite de la soutenance, le jury a estimé la ROC-AUC de 0,652 trop faible. Cette section documente la
+> démarche entreprise pour tenter de l'améliorer, avec la même discipline que le reste du projet : toute la
+> recherche est jugée en **validation croisée uniquement**, et le jeu de test (mêmes patients, même découpage)
+> n'est relu **qu'une seule fois**, à la toute fin. Le détail complet, avec le code exécuté, est dans la
+> **section VII** du [notebook](analysis/notebook_diabetes_dynamika.ipynb).
+
+**Deux leviers testés.** Les catégories administratives (`discharge_disposition`, `admission_source`,
+`medical_specialty`) avaient été regroupées en 7, 4 et 7 modalités (section 3.4) ; les diagnostics en 9 familles
+(Strack et al.). Quatre configurations sont comparées en validation croisée :
+
+<p align="center">
+  <img src="docs/images/16_ablation_variables.png" alt="ROC-AUC en validation croisée selon le regroupement des variables catégorielles" width="65%">
+</p>
+
+Garder des catégories **plus fines** pour les variables administratives améliore la ROC-AUC de validation croisée
+de **0,650 à 0,656** — un écart réel, supérieur à l'erreur-type. À l'inverse, remplacer les 9 familles de
+diagnostics par un encodage plus fin du code ICD-9 **dégrade** la performance (0,647) : ce regroupement clinique
+encode une connaissance validée, difficile à battre par un simple encodage statistique.
+
+Une **recherche bayésienne** (Optuna, 40 essais sur un espace continu, contre la grille fixe de 27 configurations
+de la section V) est ensuite menée sur la configuration gagnante :
+
+<p align="center">
+  <img src="docs/images/17_recherche_hyperparametres_v2.png" alt="Convergence de la recherche bayésienne sur 40 essais" width="65%">
+</p>
+
+La recherche converge puis stagne autour de 0,656–0,659, le même comportement que la grille initiale.
+
+**Modèle final (V2) et lecture unique du test :**
+
+| | Modèle original (section VI) | Modèle V2 (après itération) | Écart |
+| --- | :-: | :-: | :-: |
+| ROC-AUC | 0,650 | **0,654** | +0,004 |
+| PR-AUC | 0,173 | **0,184** | +0,011 |
+| Précision top 10 % | 20,3 % | **20,7 %** | +0,4 pt |
+
+<p align="center">
+  <img src="docs/images/18_comparaison_finale_v2.png" alt="Comparaison du modèle original et du modèle V2 sur le jeu de test" width="75%">
+</p>
+
+Le gain, réel, reste **modeste** : la validation croisée laissait espérer jusqu'à 0,659, mais seule une fraction de
+cet écart se confirme sur des données non vues pendant la recherche. Le levier qui a vraiment compté est le
+**regroupement plus fin des variables administratives** ; la recherche d'hyperparamètres n'ajoute qu'un gain
+supplémentaire marginal par-dessus.
+
+### Autres tentatives explorées (résultats non concluants)
+
+> [!NOTE]
+> En plus de l'itération ci-dessus (section VII du notebook, qui a produit un gain réel bien que modeste),
+> l'équipe a exploré d'autres pistes indépendantes. Elles sont documentées ici par souci de transparence —
+> détail complet dans la **section VIII** du [notebook](analysis/notebook_diabetes_dynamika.ipynb) — aucune
+> n'apporte de gain mesurable, et certaines sont franchement moins bonnes que le modèle retenu.
+
+**Le profil K-Means comme variable du modèle.** La section 3.6 avait déjà écarté le profil comme variable
+d'entrée après un premier test. Un membre de l'équipe a repris la question en détail, avec plusieurs façons de
+l'intégrer et plusieurs valeurs de k (jusqu'à k = 20) :
+
+| Façon d'intégrer le profil | k | Précision top 10 % | Lecture |
+| --- | :-: | :-: | --- |
+| Aucune (référence) | — | 20,6 % CV · 20,2 % test | référence |
+| Ajouté comme variable catégorielle | 20 | 20,7 % ± 0,4 CV | gain **dans la marge d'erreur** |
+| Comme distances aux centres | 10 | 20,6 % ± 0,6 CV | aucun gain |
+| Un modèle séparé par profil | 2 | 19,6 % ± 0,5 CV | **moins bon** |
+| Profil utilisé seul (sans les 35 autres variables) | 20 | ≈ 16,4 % CV | nettement moins bon |
+
+Le profil est construit à partir de variables que le modèle voit déjà (diagnostics, recours aux soins, durée du
+séjour) : il résume une information à laquelle XGBoost a déjà accès en détail, donc l'ajouter n'apporte rien de
+plus. Ce travail confirme aussi, par permutation (méthode indépendante de l'importance par gain déjà présentée),
+que le **mode de sortie** (−6,2 points si retiré) et les **hospitalisations antérieures** (−2,71 points) restent
+les deux facteurs dominants.
+
+**Une autre famille de modèles : TabNet.** En complément des 31 configurations déjà comparées (section 6.8 :
+CatBoost, LightGBM, EBM, réseaux de neurones, empilement), un membre de l'équipe a testé **TabNet**, un réseau de
+neurones conçu pour les données tabulaires, en 3 configurations (résultats sur la validation) :
+
+| | TabNet V1 | TabNet V2 (meilleur lift) | TabNet V3 (rappel max.) |
+| --- | :-: | :-: | :-: |
+| ROC-AUC | 0,635 | 0,633 | 0,632 |
+| Précision top 10 % | 18,1 % | 18,9 % | 18,1 % |
+| Lift top 10 % | 2,01 | 2,10 | 2,01 |
+
+TabNet reste **en dessous** du XGBoost retenu, cohérent avec la littérature : sur des données tabulaires de cette
+taille, le gradient boosting a tendance à dominer les réseaux de neurones.
+
+**Bilan : environ 105 configurations formelles comparées au total** (grille de 27, 31 alternatives, 4
+regroupements de variables, 40 essais bayésiens, 3 TabNet), auxquelles s'ajoutent les variantes du profil
+K-Means ci-dessus, sur trois familles de modèles différentes :
+
+<p align="center">
+  <img src="docs/images/19_bilan_tentatives.png" alt="ROC-AUC de toutes les tentatives d'amélioration, du modèle original à TabNet" width="80%">
+</p>
+
+> [!IMPORTANT]
+> Le meilleur résultat obtenu sur le test reste **ROC-AUC = 0,654**, contre 0,650 pour le modèle initial — un
+> écart de **0,004**, largement inférieur à ce qu'un changement de modèle ou de réglage pourrait laisser espérer.
+> Les différences entre toutes les configurations sérieuses testées sont **négligeables** devant cet écart. Le
+> modèle retenu est déjà proche du maximum atteignable avec les variables disponibles dans ce jeu de données : ce
+> n'est pas un problème de modèle ou de réglage, mais une limite de **l'information contenue dans les données**.
+> Pour aller significativement plus loin, il faudrait des données absentes de ce jeu — suivi post-sortie, contexte
+> social, évolution des résultats de laboratoire dans le temps — pas un algorithme différent.
 
 ## À retenir
 
